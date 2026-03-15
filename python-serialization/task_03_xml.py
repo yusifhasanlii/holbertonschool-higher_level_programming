@@ -1,30 +1,32 @@
 #!/usr/bin/python3
 '''
-This module provide a single function that convert datas in a CSV file
-to JSON using serialization
+
 '''
-import csv
-import json
+import xml.etree.ElementTree as ET
 
 
-def convert_csv_to_json(filename):
-    '''
-    The function to transform CSV to JSON
-    Args:
-        filename: The name of the CSV file
-    '''
+def serialize_to_xml(dictionary, filename):
+    root = ET.Element('data')
+
+    for key, value in dictionary.items():
+        child = ET.SubElement(root, key)
+        child.text = str(value)
+
+    tree = ET.ElementTree(root)
+    tree.write(filename, encoding="utf-8", xml_declaration=True)
+    return True
+
+
+def deserialize_from_xml(filename):
     try:
-        with open(filename, newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            data = list(reader)
+        tree = ET.parse(filename)
+        root = tree.getroot()
 
-        with open('data.json', 'w') as jsonfile:
-            json.dump(data, jsonfile, indent=4)
+        result = {}
+        for child in root:
+            result[child.tag] = child.text
 
-        return True
-
-    except FileNotFoundError:
-        return False
+        return result
     except Exception as e:
-        print(f"Error occured: {e}")
-        return False
+        print(f"Error {e}")
+        return {}
