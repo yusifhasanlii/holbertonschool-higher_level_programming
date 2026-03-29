@@ -1,5 +1,3 @@
-/*eslint-disable*/
-document.addEventListener('DOMContentLoaded', () => {
-    let header = document.querySelector('header');
-    header.style.color = '#FF0000';
-});
+#!/usr/bin/node
+const myVar = 'Javascript is amazing';
+console.log(myVar);
