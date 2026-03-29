@@ -5,6 +5,4 @@ if (process.argv.length <= 3) {
   const args = process.argv.slice(2).map(Number);
   const uniqueSorted = args.sort((a, b) => b - a);
   console.log(uniqueSorted[1]);
-}                                                                                                                                                                                                                                
-~                                                                                                                                       
-~                                                                                                                                       
+}
