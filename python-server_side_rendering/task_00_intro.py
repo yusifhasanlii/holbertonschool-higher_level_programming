@@ -1,41 +1,43 @@
-#!/usr/bin/python3
-import logging
 import os
 
-
 def generate_invitations(template, attendees):
+    # Tip yoxlanışı
     if not isinstance(template, str):
-        logging.error("Template must be a string")
+        print(f"Error: Invalid input type for template. Expected string, got {type(template).__name__}.")
         return
-    if not isinstance(attendees, list) or not all(isinstance(attendee, dict) for attendee in attendees):
-        logging.error("Attendees must be a list of dictionaries")
-        return
-    
-    if not template or template == "":
-        logging.error("Template is empty, no output files generated.")
+    if not isinstance(attendees, list) or not all(isinstance(item, dict) for item in attendees):
+        print(f"Error: Invalid input type for attendees. Expected list of dictionaries.")
         return
 
+    # Boşluq yoxlanışı
+    if not template:
+        print("Template is empty, no output files generated.")
+        return
     if not attendees:
-        logging.error("No data provided, no output files generated.")
+        print("No data provided, no output files generated.")
         return
 
-    for index, attendee in enumerate(attendees, start=1):
-        output_filename = f"output_{index}.txt"
+    # Hər bir iştirakçı üçün emal
+    for i, attendee in enumerate(attendees, start=1):
+        processed_template = template
         
-        if os.path.exists(output_filename):
-            logging.warning(f"{output_filename} file already exists")
-            continue
+        # Placeholder siyahısı
+        placeholders = ["name", "event_title", "event_date", "event_location"]
+        
+        for key in placeholders:
+            # Əgər açar yoxdursa və ya dəyəri None-dırsa "N/A" yazırıq
+            value = attendee.get(key)
+            if value is None:
+                value = "N/A"
+            
+            processed_template = processed_template.replace(f"{{{key}}}", str(value))
+        
+        # Fayla yazmaq
+        filename = f"output_{i}.txt"
+        
+        # Əgər fayl artıq mövcuddursa, üzərinə yazmaq olar (şərtdə əksinə qeyd olunmayıb)
         try:
-            filled_template = template
-            for key, value in attendee.items():
-                if value is None:
-                    filled_template = filled_template.replace(f"{{{key}}}", "N/A")
-                else:
-                    filled_template = filled_template.replace(f"{{{key}}}", str(value))
-
-            with open(output_filename, "w") as f:
-                f.write(filled_template)
-            logging.info(f"{output_filename} invitation generated")
-
+            with open(filename, 'w') as f:
+                f.write(processed_template)
         except Exception as e:
-            logging.error(f"{output_filename} invitation not generated: {e}")
+            print(f"Error writing to {filename}: {e}")
